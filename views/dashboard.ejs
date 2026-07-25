@@ -1,0 +1,126 @@
+<%- include('partials/header', {user: true}) %>
+
+<div class="dash-head">
+  <h1>// your stats</h1>
+  <a href="/add-platform" class="btn btn-primary">+ Add platform</a>
+</div>
+
+<div class="grid grid-cards">
+  <% accounts.forEach(function(acc) { %>
+    <div class="card stat-card" style="--tier-color: <%= acc.tier.color %>">
+      <div class="stat-card-head">
+        <span class="platform-name"><%= acc.platform %></span>
+        <span class="tier-pill"><%= acc.tier.label %></span>
+      </div>
+      <p class="handle">@<%= acc.handle %></p>
+      <div class="stat-row">
+        <span class="stat-label">Solved</span>
+        <span class="stat-value"><%= acc.total_solved %></span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">Rating</span>
+        <span class="stat-value"><%= acc.rating || '—' %></span>
+      </div>
+      <p class="sync-time">
+        synced <%= acc.last_synced_at ? new Date(acc.last_synced_at).toLocaleString() : 'never' %>
+      </p>
+    </div>
+  <% }); %>
+
+  <a href="/add-platform" class="card card-add">+ add another platform</a>
+</div>
+
+<% if (accounts.length === 0) { %>
+  <p class="empty-note">Nothing tracked yet — add a platform above to pull in your first stats.</p>
+<% } %>
+
+<div class="section-label">// combined activity</div>
+<div class="heatmap-panel">
+  <div class="heatmap-toolbar">
+    <button id="heatmap-prev" class="btn btn-ghost btn-sm">&larr; Older</button>
+    <span id="heatmap-range-label" class="heatmap-range-label"></span>
+    <button id="heatmap-next" class="btn btn-ghost btn-sm">Newer &rarr;</button>
+  </div>
+  <div id="heatmap"></div>
+  <div class="heatmap-legend">
+    <span>Less</span>
+    <span class="legend-swatch" style="background:#1f2330"></span>
+    <span class="legend-swatch" style="background:#234a38"></span>
+    <span class="legend-swatch" style="background:#2f7a58"></span>
+    <span class="legend-swatch" style="background:#4fd689"></span>
+    <span>More</span>
+  </div>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.4/dist/cal-heatmap.css" />
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/cal-heatmap@4.2.4/dist/cal-heatmap.min.js"></script>
+<script>
+  // Data passed from the server: [{ date: "2025-07-01", count: 3 }, ...]
+  const heatmapData = <%- heatmapData %>;
+
+  // Figure out how far back this user's activity actually goes, so
+  // "Older" navigation can reach all the way to their first-ever solve
+  // instead of stopping at a hardcoded 12 months.
+  let earliestDate = new Date();
+  if (heatmapData.length > 0) {
+    const dates = heatmapData.map((d) => new Date(d.date));
+    earliestDate = new Date(Math.min(...dates));
+  }
+  const today = new Date();
+  const monthsOfHistory =
+    (today.getFullYear() - earliestDate.getFullYear()) * 12 +
+    (today.getMonth() - earliestDate.getMonth()) +
+    1;
+
+  const cal = new CalHeatmap();
+  cal.paint({
+    itemSelector: "#heatmap",
+    domain: { type: "month" },
+    subDomain: { type: "day", radius: 2 },
+    range: 12,
+    date: { start: new Date(new Date().setMonth(new Date().getMonth() - 11)) },
+    data: { source: heatmapData, x: "date", y: "count" },
+    scale: {
+      color: {
+        type: "linear",
+        range: ["#234a38", "#4fd689"],
+        domain: [0, Math.max(1, ...heatmapData.map((d) => d.count))],
+      },
+    },
+  });
+
+  const prevBtn = document.getElementById("heatmap-prev");
+  const nextBtn = document.getElementById("heatmap-next");
+  const rangeLabel = document.getElementById("heatmap-range-label");
+  let monthsBack = 0;
+
+  function updateLabel() {
+    rangeLabel.textContent =
+      monthsBack === 0 ? "last 12 months" : `${monthsBack} months back`;
+  }
+  updateLabel();
+
+  prevBtn.addEventListener("click", () => {
+    if (monthsBack + 12 >= monthsOfHistory) return;
+    monthsBack += 12;
+    cal.previous();
+    prevBtn.disabled = monthsBack + 12 >= monthsOfHistory;
+    nextBtn.disabled = false;
+    updateLabel();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (monthsBack <= 0) return;
+    monthsBack -= 12;
+    cal.next();
+    nextBtn.disabled = monthsBack <= 0;
+    prevBtn.disabled = false;
+    updateLabel();
+  });
+
+  prevBtn.disabled = monthsOfHistory <= 12;
+  nextBtn.disabled = true;
+</script>
+
+<%- include('partials/footer') %>

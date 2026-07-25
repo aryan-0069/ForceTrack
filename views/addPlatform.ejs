@@ -1,0 +1,31 @@
+<%- include('partials/header', {user: true}) %>
+
+<div class="center-column">
+  <div class="narrow">
+    <div class="card auth-card">
+      <h2>Add a platform</h2>
+      <p class="auth-sub">// link a handle to sync</p>
+      <% if (error) { %>
+        <div class="alert"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/add-platform">
+        <div class="field">
+          <label>Platform</label>
+          <select name="platform" required>
+            <option value="codeforces">Codeforces</option>
+            <option value="leetcode">LeetCode</option>
+            <option value="codechef" disabled>CodeChef (coming soon)</option>
+            <option value="gfg" disabled>GeeksforGeeks (coming soon)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Handle / Username</label>
+          <input type="text" name="handle" required placeholder="e.g. tourist" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Add & sync</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

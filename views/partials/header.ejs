@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ForceTrack — CP stats, aggregated</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/"><span class="brand-dot"></span>forcetrack</a>
+      <div class="nav-actions">
+        <% if (typeof user !== 'undefined' && user) { %>
+          <a href="/dashboard" class="btn btn-ghost btn-sm">Dashboard</a>
+          <a href="/logout" class="btn btn-ghost btn-sm">Logout</a>
+        <% } else { %>
+          <a href="/login" class="btn btn-ghost btn-sm">Log in</a>
+          <a href="/signup" class="btn btn-primary btn-sm">Sign up</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+  <div class="container page-body">

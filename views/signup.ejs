@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<div class="center-column">
+  <div class="narrow">
+    <div class="card auth-card">
+      <h2>Create account</h2>
+      <p class="auth-sub">// start tracking your solves</p>
+      <% if (error) { %>
+        <div class="alert"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/signup">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" name="email" required />
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" required minlength="6" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+      </form>
+      <p class="auth-foot">Already have an account? <a href="/login">Log in</a></p>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

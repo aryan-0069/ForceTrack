@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<section class="hero">
+  <div>
+    <div class="eyebrow">// one profile, every judge</div>
+    <h1>Your solve count<br />is scattered across<br /><span>four different judges.</span></h1>
+    <p>ForceTrack pulls your Codeforces and LeetCode activity into one account and shows it as a single combined heatmap — so your grind is visible in one place, not four tabs.</p>
+    <div class="hero-actions">
+      <a href="/signup" class="btn btn-primary">Get started</a>
+      <a href="/login" class="btn btn-ghost">Log in</a>
+    </div>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-titlebar">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+      <span class="terminal-path">forcetrack — sync.log</span>
+    </div>
+    <div class="terminal-body" id="term-body"></div>
+  </div>
+</section>
+
+<section class="feature-strip">
+  <div class="feature">
+    <span class="feature-tag">01 — Connect</span>
+    <h3>Add your handles</h3>
+    <p>Link your Codeforces and LeetCode usernames. No OAuth, no password sharing — just public handles.</p>
+  </div>
+  <div class="feature">
+    <span class="feature-tag">02 — Sync</span>
+    <h3>Auto-refreshed stats</h3>
+    <p>A background job re-pulls your solve counts and rating every few hours, so your dashboard stays current.</p>
+  </div>
+  <div class="feature">
+    <span class="feature-tag">03 — Track</span>
+    <h3>One combined heatmap</h3>
+    <p>Daily activity from every platform, merged into a single calendar — see the days you actually showed up.</p>
+  </div>
+</section>
+
+<script>
+  // Small typed-log effect in the hero terminal — purely decorative,
+  // grounded in the "sync log" concept rather than a generic animation.
+  const lines = [
+    { html: '<span class="term-prompt">$</span> forcetrack sync --user aryan', delay: 0 },
+    { html: '<span class="term-dim">→ fetching codeforces/Aryannn09...</span>', delay: 500 },
+    { html: '<span class="term-ok">✓ 700 problems, rating 1277 (Pupil)</span>', delay: 900 },
+    { html: '<span class="term-dim">→ fetching leetcode/aryan...</span>', delay: 1400 },
+    { html: '<span class="term-ok">✓ 412 problems, contest rating 1550</span>', delay: 1800 },
+    { html: '<span class="term-dim">→ merging daily activity...</span>', delay: 2300 },
+    { html: '<span class="term-ok">✓ heatmap updated</span>', delay: 2700 },
+  ];
+
+  const body = document.getElementById("term-body");
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  lines.forEach((line, i) => {
+    const el = document.createElement("div");
+    el.className = "term-line";
+    el.innerHTML = line.html;
+    if (prefersReducedMotion) {
+      el.style.opacity = 1;
+    } else {
+      el.style.animationDelay = `${line.delay}ms`;
+    }
+    body.appendChild(el);
+  });
+
+  const cursorLine = document.createElement("div");
+  cursorLine.className = "term-line";
+  cursorLine.style.animationDelay = "3100ms";
+  cursorLine.innerHTML = '<span class="term-prompt">$</span> <span class="cursor"></span>';
+  if (prefersReducedMotion) cursorLine.style.opacity = 1;
+  body.appendChild(cursorLine);
+</script>
+
+<%- include('partials/footer') %>
